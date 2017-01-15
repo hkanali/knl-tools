@@ -1,0 +1,44 @@
+spring:
+  profiles:
+    active: local
+
+  jpa:
+    hibernate.naming.strategy: org.hibernate.cfg.DefaultNamingStrategy
+    properties:
+      jadira.usertype.databaseZone: jvm
+      jadira.usertype.javaZone: jvm
+      jadira.usertype.autoRegisterUserTypes: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/chat
+    username: root
+    password: root
+    driverClassName: com.mysql.jdbc.Driver
+    dbcp:
+      max-active: 1
+      initial-size: 1
+      max-idle: 1
+      min-idle: 1
+      max-wait: 30000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      validation-query: select 1
+      validation-query-timeout: -1
+      time-between-eviction-runs-millis: 30000
+      min-evictable-idle-time-millis: 30000
+
+---
+
+spring:
+  profiles: local
+
+---
+
+spring:
+  profiles: development
+
+---
+
+spring:
+  profiles: production
