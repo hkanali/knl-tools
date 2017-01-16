@@ -49,6 +49,8 @@ public class Application implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
+		this.clean();
+		
 		List<String> tables = this.jdbcTemplate.queryForList("show tables;", new HashMap<>(), String.class);
 		
 		for (String table : tables) {
@@ -69,26 +71,32 @@ public class Application implements CommandLineRunner {
 			
 			// @formatter:off
 			// entity
-			this.print(model, entity, "entity.ftl",		 OUTPUT_DIR + "/entity/" + tableUpperCamel + ".java");
+			this.print(model, entity, "entity.ftl",			 OUTPUT_DIR + "/entity/" + tableUpperCamel + ".java");
 			
 			// repository
-			this.print(model, entity, "repository.ftl",	 OUTPUT_DIR + "/repository/" + tableUpperCamel + "Repository.java");
+			this.print(model, entity, "repository.ftl",		 OUTPUT_DIR + "/repository/" + tableUpperCamel + "Repository.java");
 
 			// repository
-			this.print(model, entity, "form.ftl",		 OUTPUT_DIR + "/form/Admin" + tableUpperCamel + "Form.java");
+			this.print(model, entity, "form.ftl",			 OUTPUT_DIR + "/form/Admin" + tableUpperCamel + "Form.java");
 
 			// admin controller
-			this.print(model, entity, "controller.ftl",	 OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
+			this.print(model, entity, "controller.ftl",		 OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
 
 			// admin view index
-			this.print(model, entity, "view/index.ftl",	 OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
+			this.print(model, entity, "view/index.ftl",		 OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
 
 			// admin view detail
-			this.print(model, entity, "view/detail.ftl", OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.html");
+			this.print(model, entity, "view/detail.ftl",	OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.html");
 			// @formatter:on
 		}
 	}
 	
+	private void clean() {
+		
+		File file = new File(OUTPUT_DIR);
+		file.delete();
+	}
+
 	private void print(Map<String, Object> model, Entity entity, String templateName, String outputFileName) {
 		
 		FreeMarkerConfigurationFactory factory = new FreeMarkerConfigurationFactory();
@@ -121,35 +129,48 @@ public class Application implements CommandLineRunner {
 		
 		List<Field> idFields = new ArrayList<>();
 		List<Field> fields = new ArrayList<>();
+
+		int primaryCounter = 0;
+		for (Map<String, Object> column : columns) {
+			
+			if (column.get("Key").toString().equalsIgnoreCase("PRI")) {
+				
+				primaryCounter++;
+			}
+		}
+	
+		boolean multiPrimary = primaryCounter >= 2;
 		
 		for (Map<String, Object> column : columns) {
 			
 			if (column.get("Key").toString().equalsIgnoreCase("PRI")) {
 				
-				idFields.add(this.getField(column));
+				idFields.add(this.getField(column, true, multiPrimary));
 			}
 			else {
 				
-				fields.add(this.getField(column));
+				fields.add(this.getField(column, false, multiPrimary));
 			}
 		}
 		
 		return new Entity(new Id(idFields), fields);
 	}
 	
-	private Field getField(Map<String, Object> column) {
+	private Field getField(Map<String, Object> column, boolean primary, boolean multiPrimary) {
 		
 		// @formatter:off
 		return new Field(
 				LOWER_UNDERSCORE.to(LOWER_CAMEL, column.get("Field").toString()),
-				this.getClassName(column.get("Type").toString()),
+				this.getClazz(column.get("Type").toString()),
 				StringUtils.defaultString(column.get("Comment").toString(), null),
-				String.valueOf(column.get("Extra")).contains("auto_increment")
+				primary,
+				String.valueOf(column.get("Extra")).contains("auto_increment"),
+				multiPrimary
 			);
 		// @formatter:on
 	}
 	
-	private Class<?> getClassName(String columnType) {
+	private Class<?> getClazz(String columnType) {
 		
 		if (columnType.toLowerCase().startsWith("int")) {
 			
@@ -182,6 +203,8 @@ public class Application implements CommandLineRunner {
 		
 		throw new RuntimeException(String.format("unsupported type. %s", columnType));
 	}
+
+
 	
 	@Data
 	@AllArgsConstructor
@@ -210,11 +233,15 @@ public class Application implements CommandLineRunner {
 		
 		private String name;
 		
-		private Class<?> className;
+		private Class<?> clazz;
 		
 		private String comment;
 		
+		private boolean primary;
+		
 		private boolean autoIncrement;
+		
+		private boolean multiPrimary;
 		
 		public boolean isEnumId() {
 			
@@ -223,7 +250,32 @@ public class Application implements CommandLineRunner {
 		
 		public String getJavaFieldDef() {
 			
-			return String.format("private %s %s;", this.className.getName(), this.name);
+			return String.format("private %s %s;", this.clazz.getName(), this.name);
+		}
+		
+		public String getHtmlInputTag() {
+			
+			String name;
+			if (this.primary && this.autoIncrement && !this.multiPrimary) {
+				
+				name = "id";
+			} else if (this.primary && !this.autoIncrement && this.multiPrimary) {
+				
+				name = "id." + this.name;
+			} else {
+				
+				name = this.name;
+			}
+			
+			return String.format(
+				// @formatter:off
+				"<input"
+				+ " name=\"%s\""
+				+ " class=\"form-control\""
+				+ " type=\"%s\""
+				+ " value=\"${'${' + '(entity.id.' + field.name + ')!}'}\""
+				+ " placeholder=\"%s\" required />", name, this.clazz.toString());
+				// @formatter:on
 		}
 	}
 	

@@ -28,7 +28,9 @@ public class ${tableUpperCamel} extends BaseEntity {
 	 * ${field.comment!}
 	 */
 	@javax.persistence.Id
-	${field.autoIncrement?then('@javax.persistence.GeneratedValue', '')}
+<#if field.autoIncrement>
+	@javax.persistence.GeneratedValue
+</#if>
 	${field.javaFieldDef}
 </#list>
 </#if>
