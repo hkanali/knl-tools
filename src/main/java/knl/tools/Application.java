@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,6 +25,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import knl.tools.type.TypeMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -71,19 +69,19 @@ public class Application implements CommandLineRunner {
 			
 			// @formatter:off
 			// entity
-			this.print(model, entity, "entity.ftl",			 OUTPUT_DIR + "/entity/" + tableUpperCamel + ".java");
+			this.print(model, entity, "entity.ftl",			OUTPUT_DIR + "/entity/" + tableUpperCamel + ".java");
 			
 			// repository
-			this.print(model, entity, "repository.ftl",		 OUTPUT_DIR + "/repository/" + tableUpperCamel + "Repository.java");
+			this.print(model, entity, "repository.ftl",		OUTPUT_DIR + "/repository/" + tableUpperCamel + "Repository.java");
 
 			// repository
-			this.print(model, entity, "form.ftl",			 OUTPUT_DIR + "/form/Admin" + tableUpperCamel + "Form.java");
+			this.print(model, entity, "form.ftl",			OUTPUT_DIR + "/form/Admin" + tableUpperCamel + "Form.java");
 
 			// admin controller
-			this.print(model, entity, "controller.ftl",		 OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
+			this.print(model, entity, "controller.ftl",		OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
 
 			// admin view index
-			this.print(model, entity, "view/index.ftl",		 OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
+			this.print(model, entity, "view/index.ftl",		OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
 
 			// admin view detail
 			this.print(model, entity, "view/detail.ftl",	OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.html");
@@ -96,7 +94,7 @@ public class Application implements CommandLineRunner {
 		File file = new File(OUTPUT_DIR);
 		file.delete();
 	}
-
+	
 	private void print(Map<String, Object> model, Entity entity, String templateName, String outputFileName) {
 		
 		FreeMarkerConfigurationFactory factory = new FreeMarkerConfigurationFactory();
@@ -129,7 +127,7 @@ public class Application implements CommandLineRunner {
 		
 		List<Field> idFields = new ArrayList<>();
 		List<Field> fields = new ArrayList<>();
-
+		
 		int primaryCounter = 0;
 		for (Map<String, Object> column : columns) {
 			
@@ -138,10 +136,16 @@ public class Application implements CommandLineRunner {
 				primaryCounter++;
 			}
 		}
-	
+		
 		boolean multiPrimary = primaryCounter >= 2;
 		
 		for (Map<String, Object> column : columns) {
+			
+			// TODO system columns
+			if (Arrays.asList("create_date", "update_date").contains(column.get("Field").toString())) {
+				
+				continue;
+			}
 			
 			if (column.get("Key").toString().equalsIgnoreCase("PRI")) {
 				
@@ -172,39 +176,8 @@ public class Application implements CommandLineRunner {
 	
 	private Class<?> getClazz(String columnType) {
 		
-		if (columnType.toLowerCase().startsWith("int")) {
-			
-			return Long.class;
-		}
-		else if (columnType.toLowerCase().startsWith("bigint")) {
-			
-			return BigInteger.class;
-		}
-		else if (columnType.toLowerCase().startsWith("varchar") || columnType.toLowerCase().startsWith("text")) {
-			
-			return String.class;
-		}
-		else if (columnType.toLowerCase().startsWith("double")) {
-			
-			return Double.class;
-		}
-		else if (columnType.toLowerCase().startsWith("tinyint")) {
-			
-			return boolean.class;
-		}
-		else if (columnType.toLowerCase().equals("date")) { // #equals
-			
-			return LocalDate.class;
-		}
-		else if (columnType.toLowerCase().equals("datetime")) { // #equals
-			
-			return DateTime.class;
-		}
-		
-		throw new RuntimeException(String.format("unsupported type. %s", columnType));
+		return TypeMap.of(columnType).getClazz();
 	}
-
-
 	
 	@Data
 	@AllArgsConstructor
@@ -255,26 +228,76 @@ public class Application implements CommandLineRunner {
 		
 		public String getHtmlInputTag() {
 			
-			String name;
+			String attrName;
 			if (this.primary && this.autoIncrement && !this.multiPrimary) {
 				
-				name = "id";
-			} else if (this.primary && !this.autoIncrement && this.multiPrimary) {
-				
-				name = "id." + this.name;
-			} else {
-				
-				name = this.name;
+				return "<input name=\"id\" type=\"hidden\" value=\"${(entity.id)!}\" />";
 			}
+			else if (this.primary && !this.autoIncrement && this.multiPrimary) {
+				
+				attrName = "id." + this.name;
+			}
+			else {
+				
+				attrName = this.name;
+			}
+			
+			TypeMap typeMap = TypeMap.of(this.clazz);
+			
+			if (typeMap == TypeMap.BOOLEAN) {
+				
+				// @formatter:off
+				return String.format(this.comment
+					+ "<div class=\"checkbox\">"
+						+ "<label>"
+							+ "<input name=\"%s\" type=\"checkbox\" value=\"1\" ${((%s)!true)?then('checked=\"checked\"', '')} data-toggle=\"toggle\"/>"
+						+ "</label>"
+					+ "</div>", attrName, "entity." + attrName);
+				// @formatter:on
+			}
+			
+			return "<div class=\"form-group\">"
+				
+				+ "<label>" + this.comment + "</label>"
+				
+				+ String.format(
+					// @formatter:off
+						"<input"
+						+ " name=\"%s\""
+						+ " class=\"form-control\""
+						+ " type=\"%s\""
+						+ " value=\"${(%s)!}\""
+						+ " placeholder=\"%s\" required />",
+							attrName,
+							typeMap.getHtmlInputType(),
+							String.format(typeMap.getRenderingTemplate(), "entity." + attrName),
+							this.comment)
+				+ "</div>";
+				// @formatter:on
+		}
+		
+		public String getHtmlTableTag() {
+			
+			String attrName;
+			if (this.primary && this.autoIncrement && !this.multiPrimary) {
+				
+				attrName = "id";
+			}
+			else if (this.primary && !this.autoIncrement && this.multiPrimary) {
+				
+				attrName = "id." + this.name;
+			}
+			else {
+				
+				attrName = this.name;
+			}
+			
+			TypeMap typeMap = TypeMap.of(this.clazz);
 			
 			return String.format(
 				// @formatter:off
-				"<input"
-				+ " name=\"%s\""
-				+ " class=\"form-control\""
-				+ " type=\"%s\""
-				+ " value=\"${'${' + '(entity.id.' + field.name + ')!}'}\""
-				+ " placeholder=\"%s\" required />", name, this.clazz.toString());
+				"<td>${(%s)!}</td>",
+					String.format(typeMap.getRenderingTemplate(), "entity." + attrName));
 				// @formatter:on
 		}
 	}

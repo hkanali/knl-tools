@@ -10,7 +10,7 @@ spring:
       jadira.usertype.autoRegisterUserTypes: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/cas
+    url: jdbc:mysql://localhost:3306/cheerz
     username: root
     password: root
     driverClassName: com.mysql.jdbc.Driver
