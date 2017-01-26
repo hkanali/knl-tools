@@ -10,6 +10,9 @@
 			${field.comment}
 		</tr>
 </#list>
+		<tr>
+			操作
+		</tr>
 	</thead>
 	<tbody>
 		<#noparse><#list entities.content as entity></#noparse>
@@ -20,6 +23,7 @@
 <#list entity.fields as field>
 			${field.htmlTableTag}
 </#list>
+			<td><a href="${'${' + 'path' + '}'}${entity.idPathFtlExpression}" class="btn btn-primary btn-xs">編集</a></td>
 		</tr>
 		<#noparse></#list></#noparse>
 	</tbody>

@@ -65,6 +65,7 @@ public class Application implements CommandLineRunner {
 			
 			model.put("packageName", "knl");
 			model.put("tableUpperCamel", tableUpperCamel);
+			model.put("tableLowerCamel", tableLowerCamel);
 			model.put("entity", entity);
 			
 			// @formatter:off
@@ -186,6 +187,49 @@ public class Application implements CommandLineRunner {
 		private Id id;
 		
 		private List<Field> fields;
+		
+		public String getIdPathExpression() {
+			
+			if (!id.isEmbeddedId()) {
+				
+				return "/{" + id.fields.get(0).name + "}";
+			}
+			
+			String result = "";
+			for (Field field : id.fields) {
+				
+				result += "/" + field.getName() + "/{" + field.getName() + "}";
+			}
+			
+			return result;
+		}
+		
+		public String getIdPathFtlExpression() {
+			
+			if (!id.isEmbeddedId()) {
+				
+				return "/${entity." + id.fields.get(0).name + "}";
+			}
+			
+			String result = "";
+			for (Field field : id.fields) {
+				
+				result += "/" + field.getName() + "/${entity.id." + field.getName() + "}";
+			}
+			
+			return result;
+		}
+		
+		public String getIdControllerParamExpression() {
+			
+			String result = "";
+			for (Field field : id.fields) {
+				
+				result += "@PathVariable " + field.getClazz().getName() + " " + field.getName() + ", ";
+			}
+			
+			return result;
+		}
 	}
 	
 	@Data
