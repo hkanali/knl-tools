@@ -23,7 +23,7 @@
 <#list entity.fields as field>
 			${field.htmlTableTag}
 </#list>
-			<td><a href="${'${' + 'path' + '}'}${entity.idPathFtlExpression}" class="btn btn-primary btn-xs">編集</a></td>
+			<td><a href="${'${' + 'currentUrl' + '}'}${entity.idPathFtlExpression}" class="btn btn-primary btn-xs">編集</a></td>
 		</tr>
 		<#noparse></#list></#noparse>
 	</tbody>

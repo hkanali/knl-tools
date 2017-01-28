@@ -40,6 +40,23 @@ public class ${tableUpperCamel} extends BaseEntity {
 	 * ${field.comment!}
 	 */
 	${field.javaFieldDef}
+	<#if field.enumId>
+	/**
+	 * 
+	 */
+	public ${packageName}.${field.enumClassName} get${field.enumClassName}() {
+	
+		return ${packageName}.${field.enumClassName}.of(this.${field.name});
+	}
+	
+	/**
+	 *
+	 */
+	public void set${field.enumClassName}(${packageName}.${field.enumClassName} type) {
+	
+		this.${field.name} = type.getId();
+	}
+	</#if>
 </#list>
 <#if entity.id.embeddedId>
 	
@@ -56,6 +73,23 @@ public class ${tableUpperCamel} extends BaseEntity {
 		 * ${field.comment!}
 		 */
 		${field.javaFieldDef}
+		<#if field.enumId>
+		/**
+		 * 
+		 */
+		public ${packageName}.${field.enumClassName} get${field.enumClassName}() {
+		
+			return ${packageName}.${field.enumClassName}.of(this.${field.name});
+		}
+		
+		/**
+		 *
+		 */
+		public void set${field.enumClassName}(${packageName}.${field.enumClassName} type) {
+		
+			this.${field.name} = type.getId();
+		}
+		</#if>
 </#list>
 	}
 </#if>

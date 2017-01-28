@@ -70,22 +70,48 @@ public class Application implements CommandLineRunner {
 			
 			// @formatter:off
 			// entity
-			this.print(model, entity, "entity.ftl",			OUTPUT_DIR + "/entity/" + tableUpperCamel + ".java");
+			this.print(model, "entity.ftl",			OUTPUT_DIR + "/entity/" + tableUpperCamel + ".java");
+			
+			for (Field field : entity.getId().getFields()) {
+				
+				if (!field.isEnumId()) {
+					
+					continue;
+				}
+				
+				model.put("enumClassName", field.getEnumClassName());
+				
+				// enum
+				this.print(model, "enum.ftl",			OUTPUT_DIR + "/enum/" + field.getEnumClassName() + ".java");
+			}
+			
+			for (Field field : entity.getFields()) {
+				
+				if (!field.isEnumId()) {
+					
+					continue;
+				}
+				
+				model.put("enumClassName", field.getEnumClassName());
+				
+				// enum
+				this.print(model, "enum.ftl",			OUTPUT_DIR + "/enum/" + field.getEnumClassName() + ".java");
+			}
 			
 			// repository
-			this.print(model, entity, "repository.ftl",		OUTPUT_DIR + "/repository/" + tableUpperCamel + "Repository.java");
+			this.print(model, "repository.ftl",		OUTPUT_DIR + "/repository/" + tableUpperCamel + "Repository.java");
 
 			// repository
-			this.print(model, entity, "form.ftl",			OUTPUT_DIR + "/form/Admin" + tableUpperCamel + "Form.java");
+			this.print(model, "form.ftl",			OUTPUT_DIR + "/form/Admin" + tableUpperCamel + "Form.java");
 
 			// admin controller
-			this.print(model, entity, "controller.ftl",		OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
+			this.print(model, "controller.ftl",		OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
 
 			// admin view index
-			this.print(model, entity, "view/index.ftl",		OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
+			this.print(model, "view/index.ftl",		OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
 
 			// admin view detail
-			this.print(model, entity, "view/detail.ftl",	OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.html");
+			this.print(model, "view/detail.ftl",	OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.html");
 			// @formatter:on
 		}
 	}
@@ -96,7 +122,7 @@ public class Application implements CommandLineRunner {
 		file.delete();
 	}
 	
-	private void print(Map<String, Object> model, Entity entity, String templateName, String outputFileName) {
+	private void print(Map<String, Object> model, String templateName, String outputFileName) {
 		
 		FreeMarkerConfigurationFactory factory = new FreeMarkerConfigurationFactory();
 		factory.setTemplateLoaderPath(TEMPLATE_LOADER_PATH);
@@ -262,7 +288,27 @@ public class Application implements CommandLineRunner {
 		
 		public boolean isEnumId() {
 			
+			if (this.name.endsWith("TypeId")) {
+				
+				return true;
+			}
+			
 			return Arrays.asList().contains(this.name);
+		}
+		
+		public String getEnumClassName() {
+			
+			return LOWER_CAMEL.to(UPPER_CAMEL, this.getEnumInstanceName());
+		}
+		
+		public String getEnumInstanceName() {
+			
+			if (this.name.endsWith("TypeId")) {
+				
+				return this.name.replaceAll("TypeId", "Type");
+			}
+			
+			return new HashMap<String, String>().get(this.name);
 		}
 		
 		public String getJavaFieldDef() {
@@ -297,6 +343,26 @@ public class Application implements CommandLineRunner {
 							+ "<input name=\"%s\" type=\"checkbox\" value=\"1\" ${((%s)!true)?then('checked=\"checked\"', '')} data-toggle=\"toggle\"/>"
 						+ "</label>"
 					+ "</div>", attrName, "entity." + attrName);
+				// @formatter:on
+			}
+			else if (this.isEnumId()) {
+				
+				// @formatter:off
+				return String.format(""
+					+ "<div class=\"form-group\">"
+						+ "<label class=\"control-label\" for=\"%s\">%s</label>"
+						+ "<select id=\"%s\" name=\"%s\" class=\"form-control\">"
+							+ "<#list %ss as type>"
+							+ "<option value=\"${type.id}\" ${((%s == type.id)!false)?then('selected=\"selected\"', '')}>${type}</option>"
+							+ "</#list>"
+						+ "</select>"
+					+ "</div>",
+						attrName,
+						this.comment,
+						attrName,
+						attrName,
+						this.getEnumInstanceName(),
+						attrName);
 				// @formatter:on
 			}
 			

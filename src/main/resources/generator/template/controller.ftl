@@ -32,6 +32,16 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 	public String index(@PageableDefault(size = 50) Pageable pageable, ${tableUpperCamel}Form form, Model model,
 		HttpServletRequest req, HttpServletResponse res) {
 		
+<#list entity.id.fields as field>
+	<#if field.enumId>
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+	</#if>
+</#list>
+<#list entity.fields as field>
+	<#if field.enumId>
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+	</#if>
+</#list>
 		model.addAttribute("entities", this.repository.findAll(pageable));
 		
 		return "admin/${tableLowerCamel}/index";
@@ -41,6 +51,16 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 	public String detail(${entity.idControllerParamExpression}${tableUpperCamel}Form form, Model model, HttpServletRequest req,
 		HttpServletResponse res) {
 		
+<#list entity.id.fields as field>
+	<#if field.enumId>
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+	</#if>
+</#list>
+<#list entity.fields as field>
+	<#if field.enumId>
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+	</#if>
+</#list>
 <#if entity.id.embeddedId>
 		model.addAttribute("entity", this.repository.findOne(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>)));
 <#else>
