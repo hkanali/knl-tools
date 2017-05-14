@@ -15,14 +15,14 @@ import lombok.Getter;
 public enum TypeMap {
 	
 	// @formatter:off
-	LONG(Long.class,				"int.*",		"number",	"%s"),
-	INTEGER(Integer.class,			"int.*",		"number",	"%s"),
-	BIGINTEGER(BigInteger.class,	"bitint.*",		"number",	"%s"),
-	DOUBLE(Double.class,			"double.*",		"number",	"%s"),
-	STRING(String.class,			"text$|varchar.*",		"text",		"%s"),
-	DATETIME(DateTime.class,		"datetime$",	"text",		"%s.toString('yyyy/MM/dd HH:mm')"),
-	LOCALDATE(LocalDate.class,		"date$",		"text",		"%s.toString('yyyy/MM/dd')"),
-	BOOLEAN(Boolean.class,			"tinyint.*",	"number",	"%s?c");
+	LONG(Long.class,				"int.*",			"number",	"%s"),
+	INTEGER(Integer.class,			"int.*",			"number",	"%s"),
+	BIGINTEGER(BigInteger.class,	"bitint.*",			"number",	"%s"),
+	DOUBLE(Double.class,			"double.*",			"number",	"%s"),
+	STRING(String.class,			"text$|varchar.*",	"text",		"%s"),
+	DATETIME(DateTime.class,		"datetime$",		"text",		"%s.toString('yyyy/MM/dd HH:mm')"),
+	LOCALDATE(LocalDate.class,		"date$",			"text",		"%s.toString('yyyy/MM/dd')"),
+	BOOLEAN(Boolean.class,			"tinyint.*",		"number",	"%s?c");
 	// @formatter:on
 	
 	@Getter

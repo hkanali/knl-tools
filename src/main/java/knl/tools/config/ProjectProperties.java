@@ -4,19 +4,25 @@ package knl.tools.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.validation.annotation.Validated;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Data
 @Configuration
 @ConfigurationProperties(prefix = "project")
-@Getter
+@Validated
 public class ProjectProperties {
 	
-	@Autowired
+	@NonNull
 	private Environment environment;
 	
 	public List<String> getProfiles() {
@@ -29,4 +35,7 @@ public class ProjectProperties {
 		
 		return profiles;
 	}
+	
+	@NotNull
+	private String packageName;
 }

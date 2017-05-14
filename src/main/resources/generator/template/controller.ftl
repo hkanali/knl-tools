@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import ${packageName}.controller.BaseWebController;
 import ${packageName}.entity.${tableUpperCamel};
-import ${packageName}.form.admin.${tableUpperCamel}Form;
+import ${packageName}.form.admin.Admin${tableUpperCamel}Form;
 import ${packageName}.repository.${tableUpperCamel}Repository;
 
 @Controller
@@ -28,18 +28,18 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 	@Autowired
 	private ${tableUpperCamel}Repository repository;
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index(@PageableDefault(size = 50) Pageable pageable, ${tableUpperCamel}Form form, Model model,
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public String index(@PageableDefault(size = 50) Pageable pageable, Admin${tableUpperCamel}Form form, Model model,
 		HttpServletRequest req, HttpServletResponse res) {
 		
 <#list entity.id.fields as field>
 	<#if field.enumId>
-		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.type.${field.enumClassName}.values());
 	</#if>
 </#list>
 <#list entity.fields as field>
 	<#if field.enumId>
-		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.type.${field.enumClassName}.values());
 	</#if>
 </#list>
 		model.addAttribute("entities", this.repository.findAll(pageable));
@@ -48,17 +48,17 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 	}
 	
 	@RequestMapping(value = "${entity.idPathExpression}", method = RequestMethod.GET)
-	public String detail(${entity.idControllerParamExpression}${tableUpperCamel}Form form, Model model, HttpServletRequest req,
+	public String detail(${entity.idControllerParamExpression}Admin${tableUpperCamel}Form form, Model model, HttpServletRequest req,
 		HttpServletResponse res) {
 		
 <#list entity.id.fields as field>
 	<#if field.enumId>
-		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.type.${field.enumClassName}.values());
 	</#if>
 </#list>
 <#list entity.fields as field>
 	<#if field.enumId>
-		model.addAttribute("${field.enumInstanceName}s", ${packageName}.${field.enumClassName}.values());
+		model.addAttribute("${field.enumInstanceName}s", ${packageName}.type.${field.enumClassName}.values());
 	</#if>
 </#list>
 <#if entity.id.embeddedId>
@@ -70,8 +70,8 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 		return "admin/${tableLowerCamel}/detail";
 	}
 	
-	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public String save(@ModelAttribute ${tableUpperCamel}Form form, RedirectAttributesModelMap model, HttpServletRequest req,
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	public String save(@ModelAttribute Admin${tableUpperCamel}Form form, RedirectAttributesModelMap model, HttpServletRequest req,
 		HttpServletResponse res) {
 		
 		${tableUpperCamel} entity = new ${tableUpperCamel}();
@@ -82,7 +82,7 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 	}
 	
 	@RequestMapping(value = "${entity.idPathExpression}", method = RequestMethod.PUT)
-	public String update(${entity.idControllerParamExpression}${tableUpperCamel}Form form, RedirectAttributesModelMap model,
+	public String update(${entity.idControllerParamExpression}Admin${tableUpperCamel}Form form, RedirectAttributesModelMap model,
 		HttpServletRequest req, HttpServletResponse res) {
 		
 <#if entity.id.embeddedId>

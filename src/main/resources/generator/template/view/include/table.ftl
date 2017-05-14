@@ -11,7 +11,7 @@
 		</tr>
 </#list>
 		<tr>
-			操作
+			Operation
 		</tr>
 	</thead>
 	<tbody>
@@ -23,7 +23,7 @@
 <#list entity.fields as field>
 			${field.htmlTableTag}
 </#list>
-			<td><a href="${'${' + 'currentUrl' + '}'}${entity.idPathFtlExpression}" class="btn btn-primary btn-xs">編集</a></td>
+			<td><a href="${'${' + 'springMacroRequestContext.requestUri?html' + '}'}${entity.idPathFtlExpression}" class="btn btn-primary btn-xs">Edit</a></td>
 		</tr>
 		<#noparse></#list></#noparse>
 	</tbody>

@@ -1,3 +1,6 @@
+${'<#assign pageTitle="" />'}
+${'<#include "../../utils/common.html">'}
+${'<@layout.html pageTitle=pageTitle>'}
 
 <div class="row">
 
@@ -6,14 +9,14 @@
 		<div>
 			<a class="btn btn-primary" role="button" data-toggle="collapse"
 				href="#collapseRegisterForm" aria-expanded="false" aria-controls="collapseRegisterForm">
-				CREATE
+				Create
 			</a>
 			<div class="collapse" id="collapseRegisterForm">
-				<form action="${'${' + 'currentUrl' + '}'}" method="post">
+				<form action="${'${' + 'springMacroRequestContext.requestUri?html' + '}'}" method="post">
 
 <#include "./include/form.ftl" />
 
-					<button type="submit" class="btn btn-primary btn-xs">CREATE</button>
+					<button type="submit" class="btn btn-primary btn-xs">Save</button>
 				</form>
 			</div>
 		</div>
@@ -27,3 +30,5 @@
 	</div>
 
 </div>
+
+${'</@layout.html>'}

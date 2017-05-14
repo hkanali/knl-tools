@@ -1,3 +1,6 @@
+project:
+  package-name: join_us
+
 spring:
   profiles:
     active: local
@@ -10,7 +13,7 @@ spring:
       jadira.usertype.autoRegisterUserTypes: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/cheerz
+    url: jdbc:mysql://localhost:3306/join_us
     username: root
     password: root
     driverClassName: com.mysql.jdbc.Driver

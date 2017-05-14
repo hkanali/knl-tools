@@ -1,6 +1,7 @@
 package ${packageName}.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,15 +45,15 @@ public class ${tableUpperCamel} extends BaseEntity {
 	/**
 	 * 
 	 */
-	public ${packageName}.${field.enumClassName} get${field.enumClassName}() {
+	public ${packageName}.type.${field.enumClassName} get${field.enumClassName}() {
 	
-		return ${packageName}.${field.enumClassName}.of(this.${field.name});
+		return ${packageName}.type.${field.enumClassName}.of(this.${field.name});
 	}
 	
 	/**
 	 *
 	 */
-	public void set${field.enumClassName}(${packageName}.${field.enumClassName} type) {
+	public void set${field.enumClassName}(${packageName}.type.${field.enumClassName} type) {
 	
 		this.${field.name} = type.getId();
 	}
@@ -77,15 +78,15 @@ public class ${tableUpperCamel} extends BaseEntity {
 		/**
 		 * 
 		 */
-		public ${packageName}.${field.enumClassName} get${field.enumClassName}() {
+		public ${packageName}.type.${field.enumClassName} get${field.enumClassName}() {
 		
-			return ${packageName}.${field.enumClassName}.of(this.${field.name});
+			return ${packageName}.type.${field.enumClassName}.of(this.${field.name});
 		}
 		
 		/**
 		 *
 		 */
-		public void set${field.enumClassName}(${packageName}.${field.enumClassName} type) {
+		public void set${field.enumClassName}(${packageName}.type.${field.enumClassName} type) {
 		
 			this.${field.name} = type.getId();
 		}

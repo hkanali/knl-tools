@@ -20,21 +20,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import knl.tools.config.ProjectProperties;
 import knl.tools.type.TypeMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @EnableAutoConfiguration
+@ComponentScan
 public class Application implements CommandLineRunner {
 	
 	private static final String TEMPLATE_LOADER_PATH = "generator/template";
 	
 	private static final String OUTPUT_DIR = "src/main/resources/generator/output";
+
+	private static final List<String> SYSTEM_COLUMNS_FIELD_NAMES = Arrays.asList("create_date", "update_date");
+	
+	@Autowired
+	private ProjectProperties projectProperties;
 	
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
@@ -63,7 +71,7 @@ public class Application implements CommandLineRunner {
 			String tableUpperCamel = LOWER_UNDERSCORE.to(UPPER_CAMEL, table);
 			String tableLowerCamel = LOWER_UNDERSCORE.to(LOWER_CAMEL, table);
 			
-			model.put("packageName", "knl");
+			model.put("packageName", this.projectProperties.getPackageName());
 			model.put("tableUpperCamel", tableUpperCamel);
 			model.put("tableLowerCamel", tableLowerCamel);
 			model.put("entity", entity);
@@ -168,8 +176,7 @@ public class Application implements CommandLineRunner {
 		
 		for (Map<String, Object> column : columns) {
 			
-			// TODO system columns
-			if (Arrays.asList("create_date", "update_date").contains(column.get("Field").toString())) {
+			if (SYSTEM_COLUMNS_FIELD_NAMES.contains(column.get("Field").toString())) {
 				
 				continue;
 			}
@@ -274,6 +281,14 @@ public class Application implements CommandLineRunner {
 	@AllArgsConstructor
 	public static class Field {
 		
+		private static final Map<String, String> FIELD_ENUM_CLASS_NAME_MAP;
+		
+		static {
+			
+			FIELD_ENUM_CLASS_NAME_MAP = new HashMap<>();
+			FIELD_ENUM_CLASS_NAME_MAP.put("genderId", "gender");
+		}
+
 		private String name;
 		
 		private Class<?> clazz;
@@ -293,7 +308,7 @@ public class Application implements CommandLineRunner {
 				return true;
 			}
 			
-			return Arrays.asList().contains(this.name);
+			return FIELD_ENUM_CLASS_NAME_MAP.keySet().contains(this.name);
 		}
 		
 		public String getEnumClassName() {
@@ -307,8 +322,8 @@ public class Application implements CommandLineRunner {
 				
 				return this.name.replaceAll("TypeId", "Type");
 			}
-			
-			return new HashMap<String, String>().get(this.name);
+
+			return FIELD_ENUM_CLASS_NAME_MAP.get(this.name);
 		}
 		
 		public String getJavaFieldDef() {
@@ -400,6 +415,14 @@ public class Application implements CommandLineRunner {
 			else {
 				
 				attrName = this.name;
+			}
+
+			if (this.name.endsWith("TypeId")) {
+				
+				attrName = attrName.replace("Id", "");
+			} else if (FIELD_ENUM_CLASS_NAME_MAP.keySet().contains(this.name)) {
+				
+				attrName = attrName.replace(this.name, FIELD_ENUM_CLASS_NAME_MAP.get(this.name));
 			}
 			
 			TypeMap typeMap = TypeMap.of(this.clazz);
