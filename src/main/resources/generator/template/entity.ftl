@@ -19,7 +19,7 @@ public class ${tableUpperCamel} extends BaseEntity {
 	
 <#if entity.id.embeddedId>
 	/**
-	 * {@link ID}
+	 * {@link Id}
 	 */
 	@javax.persistence.EmbeddedId
 	private Id id; 
@@ -61,13 +61,11 @@ public class ${tableUpperCamel} extends BaseEntity {
 </#list>
 <#if entity.id.embeddedId>
 	
-	@SuppressWarnings("serial")
 	@Data
-	@EqualsAndHashCode(callSuper = true)
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@javax.persistence.Embeddable
-	public static class Id implements Serializable {
+	public static class Id implements java.io.Serializable {
 <#list entity.id.fields as field>
 		
 		/**

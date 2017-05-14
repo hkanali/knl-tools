@@ -1,17 +1,19 @@
 <table class="table table-striped table-hover">
 	<thead>
-<#list entity.id.fields as field>
 		<tr>
-			${field.comment}
-		</tr>
+<#list entity.id.fields as field>
+			<th>
+				${field.comment}
+			</th>
 </#list>
 <#list entity.fields as field>
-		<tr>
-			${field.comment}
-		</tr>
+			<th>
+				${field.comment}
+			</th>
 </#list>
-		<tr>
-			Operation
+			<th>
+				Operation
+			</th>
 		</tr>
 	</thead>
 	<tbody>

@@ -86,7 +86,7 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 		HttpServletRequest req, HttpServletResponse res) {
 		
 <#if entity.id.embeddedId>
-		${tableUpperCamel} entity = this.repository.findOne(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>)));
+		${tableUpperCamel} entity = this.repository.findOne(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>));
 <#else>
 		${tableUpperCamel} entity = this.repository.findOne(${entity.id.fields[0].name});
 </#if>
@@ -101,7 +101,7 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 		HttpServletResponse res) {
 		
 <#if entity.id.embeddedId>
-		this.repository.delete(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>)));
+		this.repository.delete(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>));
 <#else>
 		this.repository.delete(${entity.id.fields[0].name});
 </#if>
