@@ -2,6 +2,7 @@
 package knl.tools.type;
 
 import java.math.BigInteger;
+import java.sql.Date;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
@@ -17,7 +18,7 @@ public enum TypeMap {
 	// @formatter:off
 	LONG(Long.class,				"int.*",			"number",	"%s"),
 	INTEGER(Integer.class,			"int.*",			"number",	"%s"),
-	BIGINTEGER(BigInteger.class,	"bitint.*",			"number",	"%s"),
+	BIGINTEGER(BigInteger.class,	"bigint.*",			"number",	"%s"),
 	DOUBLE(Double.class,			"double.*",			"number",	"%s"),
 	STRING(String.class,			"text$|varchar.*",	"text",		"%s"),
 	DATETIME(DateTime.class,		"datetime$",		"text",		"%s.toString('yyyy/MM/dd HH:mm')"),
@@ -60,6 +61,6 @@ public enum TypeMap {
 			}
 		}
 		
-		throw new RuntimeException();
+		throw new RuntimeException(String.format("unknown column type %s", columnType));
 	}
 }
