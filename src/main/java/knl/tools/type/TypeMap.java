@@ -22,7 +22,7 @@ public enum TypeMap {
 	STRING(String.class,			"text$|varchar.*",	"text",		"%s"),
 	DATETIME(DateTime.class,		"datetime$",		"text",		"%s.toString('yyyy/MM/dd HH:mm')"),
 	LOCALDATE(LocalDate.class,		"date$",			"text",		"%s.toString('yyyy/MM/dd')"),
-	BOOLEAN(Boolean.class,			"tinyint.*",		"number",	"%s?c");
+	BOOLEAN(boolean.class,			"tinyint.*",		"number",	"%s?c");
 	// @formatter:on
 	
 	@Getter
