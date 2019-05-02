@@ -1,10 +1,8 @@
 <#list entity.id.fields as field>
 
-
-			${field.htmlInputTag}
+			<#if !['createDatetime', 'updateDatetime', 'deleted']?seq_contains(field.name)>${field.htmlInputTag}</#if>
 </#list>
 <#list entity.fields as field>
 
-
-			${field.htmlInputTag}
+			<#if !['createDatetime', 'updateDatetime', 'deleted']?seq_contains(field.name)>${field.htmlInputTag}</#if>
 </#list>

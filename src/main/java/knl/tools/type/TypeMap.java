@@ -2,11 +2,9 @@
 package knl.tools.type;
 
 import java.math.BigInteger;
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.regex.Pattern;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,8 +19,8 @@ public enum TypeMap {
 	BIGINTEGER(BigInteger.class,	"bigint.*",			"number",	"%s"),
 	DOUBLE(Double.class,			"double.*",			"number",	"%s"),
 	STRING(String.class,			"text$|varchar.*",	"text",		"%s"),
-	DATETIME(DateTime.class,		"datetime$",		"text",		"%s.toString('yyyy/MM/dd HH:mm')"),
-	LOCALDATE(LocalDate.class,		"date$",			"text",		"%s.toString('yyyy/MM/dd')"),
+	DATETIME(ZonedDateTime.class,	"datetime$",		"text",		"%s.toString()"),
+	LOCALDATE(LocalDate.class,		"date$",			"text",		"%s.toString()"),
 	BOOLEAN(boolean.class,			"tinyint.*",		"number",	"%s?c");
 	// @formatter:on
 	

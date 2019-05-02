@@ -4,7 +4,7 @@
 dump.rdb
 
 src/main/resources/generator/output/**/*.java
-src/main/resources/generator/output/**/*.html
+src/main/resources/generator/output/**/*.ftl
 
 # Created by https://www.gitignore.io
 

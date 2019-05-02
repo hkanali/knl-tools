@@ -117,10 +117,10 @@ public class Application implements CommandLineRunner {
 			this.print(model, "controller.ftl",		OUTPUT_DIR + "/controller/Admin" + tableUpperCamel + "Controller.java");
 
 			// admin view index
-			this.print(model, "view/index.ftl",		OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.html");
+			this.print(model, "view/index.ftl",		OUTPUT_DIR + "/view/" + tableLowerCamel + "/index.ftl");
 
 			// admin view detail
-			this.print(model, "view/detail.ftl",	OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.html");
+			this.print(model, "view/detail.ftl",	OUTPUT_DIR + "/view/" + tableLowerCamel + "/detail.ftl");
 			// @formatter:on
 		}
 	}

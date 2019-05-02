@@ -1,31 +1,30 @@
-
-package ${packageName}.controller.admin;
+package ${packageName}.web.controller.admin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import ${packageName}.controller.BaseWebController;
-import ${packageName}.entity.${tableUpperCamel};
-import ${packageName}.form.admin.Admin${tableUpperCamel}Form;
-import ${packageName}.repository.${tableUpperCamel}Repository;
+import lombok.AllArgsConstructor;
+import ${packageName}.data.entity.${tableUpperCamel};
+import ${packageName}.data.repository.${tableUpperCamel}Repository;
+import ${packageName}.web.form.admin.Admin${tableUpperCamel}Form;
 
+@AllArgsConstructor
 @Controller
 @RequestMapping(value = "/admin/${tableLowerCamel}")
-public class Admin${tableUpperCamel}Controller extends BaseWebController {
+public class Admin${tableUpperCamel}Controller {
 	
-	@Autowired
 	private ${tableUpperCamel}Repository repository;
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
@@ -62,38 +61,38 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 	</#if>
 </#list>
 <#if entity.id.embeddedId>
-		model.addAttribute("entity", this.repository.findOne(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>)));
+		model.addAttribute("entity", this.repository.findById(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>)).orElse(null));
 <#else>
-		model.addAttribute("entity", this.repository.findOne(${entity.id.fields[0].name}));
+		model.addAttribute("entity", this.repository.findById(${entity.id.fields[0].name}).orElse(null));
 </#if>
 		
 		return "admin/${tableLowerCamel}/detail";
 	}
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	public String save(@ModelAttribute Admin${tableUpperCamel}Form form, RedirectAttributesModelMap model, HttpServletRequest req,
+	public String save(@ModelAttribute Admin${tableUpperCamel}Form form, BindingResult bindingResult, RedirectAttributesModelMap model, HttpServletRequest req,
 		HttpServletResponse res) {
 		
 		${tableUpperCamel} entity = new ${tableUpperCamel}();
 		BeanUtils.copyProperties(form, entity);
 		this.repository.save(entity);
 		
-		return this.redirectReferer(req);
+		return "redirect:/admin/${tableLowerCamel}";
 	}
 	
 	@RequestMapping(value = "${entity.idPathExpression}", method = RequestMethod.PUT)
-	public String update(${entity.idControllerParamExpression}Admin${tableUpperCamel}Form form, RedirectAttributesModelMap model,
+	public String update(${entity.idControllerParamExpression}Admin${tableUpperCamel}Form form, BindingResult bindingResult, RedirectAttributesModelMap model,
 		HttpServletRequest req, HttpServletResponse res) {
 		
 <#if entity.id.embeddedId>
-		${tableUpperCamel} entity = this.repository.findOne(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>));
+		${tableUpperCamel} entity = this.repository.findById(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>)).orElse(null);
 <#else>
-		${tableUpperCamel} entity = this.repository.findOne(${entity.id.fields[0].name});
+		${tableUpperCamel} entity = this.repository.findById(${entity.id.fields[0].name}).orElse(null);
 </#if>
-		BeanUtils.copyProperties(form, entity, "id", "createDate", "updateDate");
+		BeanUtils.copyProperties(form, entity, "id", "createDatetime", "updateDatetime");
 		this.repository.save(entity);
 		
-		return this.redirectReferer(req);
+		return "redirect:/admin/${tableLowerCamel}";
 	}
 	
 	@RequestMapping(value = "${entity.idPathExpression}", method = RequestMethod.DELETE)
@@ -101,11 +100,11 @@ public class Admin${tableUpperCamel}Controller extends BaseWebController {
 		HttpServletResponse res) {
 		
 <#if entity.id.embeddedId>
-		this.repository.delete(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>));
+		this.repository.deleteById(new ${tableUpperCamel}.Id(<#list entity.id.fields as field>${field.name}<#sep>, </#list>));
 <#else>
-		this.repository.delete(${entity.id.fields[0].name});
+		this.repository.deleteById(${entity.id.fields[0].name});
 </#if>
 		
-		return this.redirectReferer(req);
+		return "redirect:/admin/${tableLowerCamel}";
 	}
 }

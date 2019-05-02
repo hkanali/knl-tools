@@ -1,5 +1,5 @@
 project:
-  package-name: join_us
+  package-name: stuw
 
 spring:
   profiles:
@@ -13,9 +13,9 @@ spring:
       jadira.usertype.autoRegisterUserTypes: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/join_us
+    url: jdbc:mysql://localhost:3306/stuw
     username: root
-    password: root
+    password: 
     driverClassName: com.mysql.jdbc.Driver
     dbcp:
       max-active: 1

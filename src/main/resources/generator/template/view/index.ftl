@@ -1,5 +1,5 @@
 ${'<#assign pageTitle="" />'}
-${'<#include "../../utils/common.html">'}
+${'<#include "../../shared/common.ftl">'}
 ${'<@layout.html pageTitle=pageTitle>'}
 
 <div class="row">

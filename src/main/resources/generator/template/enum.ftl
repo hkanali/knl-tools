@@ -1,4 +1,4 @@
-package ${packageName}.type;
+package ${packageName}.constant;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,16 +13,8 @@ public enum ${enumClassName} {
 	private Long id;
 	
 	public static ${enumClassName} of(Long id) {
-		
-		for (${enumClassName} type : values()) {
-			
-			if (type.getId().equals(id)) {
-			
-				return type;
-			}
-		}
-		
-		throw new IllegalStateException(String.format("Illegal ${enumClassName} id. id=%s", id));
+
+		return Arrays.stream(values()).filter(o -> o.getId().equals(id)).findFirst().orElse(null);
 	}
 }
 
